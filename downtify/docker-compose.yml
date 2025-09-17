@@ -1,0 +1,12 @@
+services:
+  downtify:
+    container_name: downtify
+    image: henriquesebastiao/downtify:latest
+    ports:
+      - '5173:30321'
+    volumes:
+      - /mnt/nas/dockerdata/downtify/downloads:/downloads
+    environment:
+      - DOWNTIFY_PORT=30321  # Optional 
+      - CLIENT_ID=ace47d6e584144dfa2bbc6bbbb175502  # Optional
+      - CLIENT_SECRET=ea1d3d13340c4692968a23217f7bafee  # Optional

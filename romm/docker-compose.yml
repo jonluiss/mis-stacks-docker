@@ -1,0 +1,52 @@
+services:
+  db:
+    image: mariadb:11.4-noble #LTS Long Time Support Until May 29, 2029.
+    container_name: RomM-DB
+    security_opt:
+      - no-new-privileges:false
+    environment:
+      MYSQL_DATABASE: romm
+      MYSQL_USER: rommuser
+      MYSQL_PASSWORD: rommpass
+      MYSQL_ROOT_PASSWORD: rootpass
+      TZ: Europe/Madrid
+    volumes:
+      - /home/administrador/docker/romm/db:/var/lib/mysql:rw
+    restart: on-failure:5
+
+  romm:
+    image: rommapp/romm:latest
+    container_name: RomM
+    healthcheck:
+      test: timeout 10s bash -c ':> /dev/tcp/127.0.0.1/8080' || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 90s  
+    environment:
+      ROMM_DB_DRIVER: mariadb
+      DB_HOST: db
+      DB_NAME: romm
+      DB_USER: rommuser
+      DB_PASSWD: rommpass
+      DB_PORT: 3306
+      ROMM_AUTH_SECRET_KEY: 7aef1af687032b2d9a85a82f81344d5ae024de179fe29a000835e10713c653d1
+      SCREENSCRAPER_USER: WildDuck76 #These are the recommended metadata providers
+      SCREENSCRAPER_PASSWORD: vn3evaiG10iVDX #https://docs.romm.app/latest/Getting-Started/Metadata-Providers/#screenscraper
+      IGDB_CLIENT_ID: g5ioyg4mpitr4ky29li8ujjxzo18k5 #Generate an ID and SECRET in IGDB
+      IGDB_CLIENT_SECRET: r3nqxr121ggx12b7emxmhah6kxuhn3 #https://api-docs.igdb.com/#account-creation
+      #MOBYGAMES_API_KEY: https://www.mobygames.com/info/api/
+      STEAMGRIDDB_API_KEY: 207f52e89a2a7770fce00895134e1305 #https://docs.romm.app/latest/Getting-Started/Metadata-Providers/#steamgriddb
+      RETROACHIEVEMENTS_API_KEY: Vz87KCtTdTqyGkWeDn4aIdrsWzfSmbMP #https://api-docs.retroachievements.org/
+      HASHEOUS_API_ENABLED: true # https://docs.romm.app/latest/Getting-Started/Metadata-Providers/#hasheous
+    volumes:
+      - /mnt/nas/dockerdata/romm/resources:/romm/resources:rw
+      - /mnt/nas/dockerdata/romm/redis:/redis-data:rw
+      - /mnt/nas/dockerdata/romm/games/library:/romm/library:rw
+      - /mnt/nas/dockerdata/romm/games/assets:/romm/assets:rw
+      - /mnt/nas/dockerdata/romm/games/config:/romm/config:rw
+    ports:
+      - 480:8080
+    depends_on:
+      - db
+    restart: on-failure:10
