@@ -1,0 +1,14 @@
+services:
+  spotizerr:
+    container_name: spotizerr
+    image: cooldockerizer93/spotizerr:latest
+    restart: unless-stopped
+    command: web --host 0.0.0.0 --port 7171 --web-use-output-dir --keep-alive --format mp3 --user-auth
+    user: "1000:1000"  # Reemplaza con tu UID y GID (usa `id -u` y `id -g`)
+    ports:
+      - "7171:7171"
+    volumes:
+      - /mnt/nas/dockerdata/spotizerr/downloads:/app/downloads:rw
+      - /mnt/nas/dockerdata/spotizerr/cache:/root/.cache/spotdl:rw   # cache persistente en NAS
+    environment:
+      - TZ=Europe/Madrid
