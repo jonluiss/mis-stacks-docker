@@ -1,0 +1,45 @@
+services:
+  calibre-web:
+    image: crocodilestick/calibre-web-automated:latest
+    container_name: calibre-web
+    environment:
+      - PUID=1000             # UID del usuario en tu host/NAS con permisos sobre la biblioteca
+      - PGID=1000             # GID del grupo en tu host/NAS
+      - TZ=Europe/Madrid
+      - CWA_BOOK_UPLOAD_WAITTIME=5  # Espera 5s entre ingest y refresh para evitar locks
+      - HARDCOVER_TOKEN=your_hardcover_api_key_here
+      - NETWORK_SHARE_MODE=true
+    volumes:
+      # Biblioteca de Calibre (metadata.db se genera aquí)
+      - /mnt/nas/dockerdata/calibre-web-automated/library:/calibre-library:cached
+      # Carpeta de ingest (donde pones los ebooks nuevos)
+      - /mnt/nas/dockerdata/calibre-web-automated/ingest:/cwa-book-ingest:cached
+      # Configuración de Calibre-Web
+      - /home/administrador/docker/calibre-web-automated/config:/config
+      - /mnt/nas/dockerdata/calibre-web-automated/plugins:/config/.config/calibre/plugins
+    ports:
+      - 8083:8083
+    restart: unless-stopped
+
+  calibre-web-automated-book-downloader:
+    image: ghcr.io/calibrain/calibre-web-automated-book-downloader:latest
+    container_name: calibre-web-automated-book-downloader
+    environment:
+      - FLASK_PORT=8084
+      - LOG_LEVEL=info
+      - BOOK_LANGUAGE=en
+      - USE_BOOK_TITLE=true
+      - TZ=Europe/Madrid
+      - APP_ENV=prod
+      - UID=1000
+      - GID=1000
+      - MAX_CONCURRENT_DOWNLOADS=3
+      - DOWNLOAD_PROGRESS_UPDATE_INTERVAL=5
+    volumes:
+      - /mnt/nas/dockerdata/calibre-web-automated/ingest:/cwa-book-ingest
+      # Descomenta si quieres usar la DB de CWA para autenticación
+      # - /mnt/nas/calibre-web-automated/config/app.db:/auth/app.db:ro
+    ports:
+      - 8084:8084
+    restart: unless-stopped
+
