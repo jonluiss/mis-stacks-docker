@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=superseguro123
+      - POSTGRES_DB=postgres
+    volumes:
+      - /home/administrador/docker/linkwarden/pgdata/:/var/lib/postgresql/data
+
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:latest # comment to build from source
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://postgres:superseguro123@postgres:5432/postgres
+      - NEXTAUTH_SECRET=lTiOQ5K5bSskzWZwkOFU3yyIcDga3jUKCsQWrPrgUzEMf8eZ713SrWnGaMWv6VHw
+      - NEXTAUTH_URL=http://192.168.1.200:4222
+      - LINKWARDEN_PORT=3000
+    ports:
+      - 4222:3000
+    volumes:
+      - /mnt/nas/dockerdata/linkwarden/data:/data/data
+    depends_on:
+      - postgres
+      - meilisearch
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.12.8
+    restart: always
+    volumes:
+      - ./meili_data:/meili_data
