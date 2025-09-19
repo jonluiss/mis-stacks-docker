@@ -1,0 +1,38 @@
+services:
+  koillection:
+    container_name: koillection
+    image: koillection/koillection:latest
+    restart: always
+    ports:
+      - "181:80"
+    environment:
+      - DB_DRIVER=pdo_pgsql
+      - DB_HOST=postgresql
+      - DB_NAME=koillection
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_PORT=5432
+      - DB_VERSION=14
+      - APP_ENV=prod
+      - APP_DEBUG=0
+      - PHP_TZ=Europe/Madrid
+      - HTTPS_ENABLED=0
+    volumes:
+      # Este es el único volumen que necesitas para la aplicación.
+      # Se asegura de que solo los archivos subidos sean persistentes.
+      - /mnt/nas/dockerdata/koillection/uploads:/var/www/koillection/public/uploads
+    depends_on:
+      - postgresql
+
+  postgresql:
+    container_name: postgresql
+    image: postgres:14
+    restart: always
+    environment:
+      - POSTGRES_DB=koillection
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "25432:5432"
+    volumes:
+      - /home/administrador/docker/koillection/postgresql:/var/lib/postgresql/data
