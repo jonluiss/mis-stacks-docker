@@ -1,0 +1,42 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: ytdl-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:alpine
+    container_name: ytdl-redis
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+  ytdl-material:
+    image: tzahi12345/youtubedl-material:latest
+    container_name: ytdl-app
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+    ports:
+      - "7080:17442"   # Cambia si quieres otro puerto
+    environment:
+      ALLOW_CONFIG_MUTATIONS: 'true'
+      WRITE_YTDL_CONFIG: 'true'
+      ytdl_mongodb_connection_string: mongodb://mongo:27017
+      ytdl_use_local_db: 'false'
+      ytdl_default_downloader: yt-dlp
+      ytdl_redis_enabled: 'true'
+      ytdl_redis_host: redis
+    volumes:
+      - /mnt/nas/dockerdata/youtubedl-material/appdata:/app/appdata     # Configuración persistente
+      - /mnt/nas/dockerdata/youtubedl-material/audio:/app/audio         # Descargas de audio
+      - /mnt/nas/dockerdata/youtubedl-material/video:/app/video         # Descargas de video
+      - /mnt/nas/dockerdata/youtubedl-material/subscriptions:/app/subscriptions  # Suscripciones
+      - /mnt/nas/dockerdata/youtubedl-material/users:/app/users         # Datos de usuarios
+
+volumes:
+  mongo-data:
+  redis-data:
