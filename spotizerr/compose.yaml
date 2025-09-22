@@ -1,6 +1,6 @@
 services:
   spotizer:
-    image: ghcr.io/spotizer/spotizer-backend:latest
+    image: cooldockerizer93/spotizerr:latest
     container_name: spotizer
     restart: unless-stopped
     ports:
@@ -10,4 +10,5 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
+
       - TZ=Europe/Madrid # Opcional: Cambia a tu zona horaria
