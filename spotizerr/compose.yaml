@@ -1,0 +1,13 @@
+services:
+  spotizer:
+    image: ghcr.io/spotizer/spotizer-backend:latest
+    container_name: spotizer
+    restart: unless-stopped
+    ports:
+      - "7171:7171"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid # Opcional: Cambia a tu zona horaria
