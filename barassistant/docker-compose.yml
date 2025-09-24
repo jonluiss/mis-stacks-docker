@@ -49,7 +49,7 @@ services:
     image: getmeili/meilisearch:v1.11
     environment:
       - MEILI_NO_ANALYTICS=true
-      - MEILI_MASTER_KEY=masterKeyThatIsReallyReallyLong4Real
+      - MEILI_MASTER_KEY=QuU5HWvl4XkQ0GBv5genEFPE5KnsLIv5
     restart: unless-stopped
     ports:
       - 7700:7700
