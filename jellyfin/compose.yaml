@@ -5,8 +5,8 @@ services:
     user: 1000:1000
     network_mode: 'host'
     volumes:
-      - /home/administrador/docker/config:/config
-      - /home/administrador/docker/cache:/cache
+      - /home/administrador/docker/jellyfin/config:/config
+      - /home/administrador/docker/jellyfin/cache:/cache
       - type: bind
         source: /mnt/nas/dockerdata/jellyfin/media
         target: /media
